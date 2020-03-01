@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+docker build -f app/Dockerfile -t shippingdocker.com/app:latest ./app
+docker build -f node/Dockerfile -t shippingdocker.com/node:latest ./node

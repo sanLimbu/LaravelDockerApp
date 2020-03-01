@@ -1,0 +1,61 @@
+version: '3'
+services:
+  app:
+    build:
+      context: ./docker/app
+      dockerfile: Dockerfile
+    restart: always
+    image: san/app:latest
+    networks:
+     - appnet
+    volumes:
+     - .:/var/www/html
+    ports:
+     - 80:80
+    working_dir: /var/www/html
+  cache:
+    image: redis:alpine
+    networks:
+     - appnet
+    volumes:
+     - cachedata:/data
+  node:
+    build:
+      context: ./docker/node
+      dockerfile: Dockerfile
+    image: san/node
+    volumes:
+      - .:/var/www/html
+    networks:
+      - appnet
+
+  db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: homestead
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+    networks:
+      - appnet
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redisdata:/data
+    networks:
+      - appnet
+networks:
+  appnet:
+    driver: bridge
+volumes:
+  dbdata:
+    driver: local
+  redisdata:
+    driver: local
+  cachedata:
+    driver: local
